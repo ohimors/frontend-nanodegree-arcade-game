@@ -1,7 +1,4 @@
-var Location = function(){
-    this.x;
-    this.y;
-}
+var BOARD_UNIT_SIZE = 100;
 
 // Enemies our player must avoid
 var Enemy = function() {
@@ -11,17 +8,25 @@ var Enemy = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
-    this.initialLocation;
-    this.speed = null;
-
+    this.x = 0;
+    this.y = 202;
+    this.speed = 100;
 };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
+    console.log(" tick: "+ dt);
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+    //var offset = this.calculateOffset(this.x, this.y, 'right');
+    this.x = this.x + (this.speed * dt);
+     if(this.x > 606){
+            this.x  = 0;
+        }
+
+    //TODO: Handle collision with player
 };
 
 // Draw the enemy on the screen, required method for game
@@ -34,9 +39,37 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function(){
     this.sprite = 'images/char-boy.png';
+    this.x = 202;
+    this.y = 404;
+    this.currDirection;
+    this.calculateOffset = function(x, y, direction){
+        if(direction === 'right'){
+            x += BOARD_UNIT_SIZE + 1;
+        }
+        else
+        if(direction === 'left'){
+            x -= BOARD_UNIT_SIZE - 1;
+        }
+        if(direction === 'up'){
+            y -= BOARD_UNIT_SIZE - 1;
+        }
+        else
+        if(direction === 'down'){
+            y += BOARD_UNIT_SIZE + 1;
+        }
+        this.currDirection = null;
+        return { "x" : x,"y": y};
+    };
 }
 
 Player.prototype.update = function(dt){
+    var offset = this.calculateOffset(this.x, this.y, this.currDirection);
+    this.x = offset.x;
+    this.y = offset.y;
+
+    if(this.y < 0){
+        this.y = 404;
+    }
 
 }
 
@@ -45,6 +78,7 @@ Player.prototype.render = function(){
 }
 
 Player.prototype.handleInput = function(allowedKeys){
+    this.currDirection = allowedKeys;
 
 }
 // Now instantiate your objects.
@@ -54,7 +88,7 @@ var player = new Player();
 var enemy1 = new Enemy();
 var enemy2 = new Enemy();
 var enemy3 = new Enemy();
-var allEnemies = [enemy1, enemy2, enemy3];
+var allEnemies = [enemy1];
 
 
 // This listens for key presses and sends the keys to your
