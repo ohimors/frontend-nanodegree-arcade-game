@@ -1,16 +1,18 @@
 var BOARD_UNIT_SIZE = 100;
-
+var ENEMY_STARTING_POINTS = [50, 125, 225];
+var ENEMY_SPEED_OPTIONS = [100, 200, 300, 50];
+var NUM_ENEMIES = 4;
 // Enemies our player must avoid
-var Enemy = function() {
+var Enemy = function(y,speed) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
-    this.x = 0;
-    this.y = 202;
-    this.speed = 100;
+    this.x = - Math.floor((Math.random() * 50) + 150);
+    this.y = ENEMY_STARTING_POINTS[Math.floor(Math.random()*ENEMY_STARTING_POINTS.length)];
+    this.speed = ENEMY_SPEED_OPTIONS[Math.floor(Math.random()*ENEMY_SPEED_OPTIONS.length)];
 };
 
 // Update the enemy's position, required method for game
@@ -24,9 +26,16 @@ Enemy.prototype.update = function(dt) {
     this.x = this.x + (this.speed * dt);
      if(this.x > 606){
             this.x  = 0;
+            this.speed = ENEMY_SPEED_OPTIONS[Math.floor(Math.random()*ENEMY_SPEED_OPTIONS.length)];
+            this.y = ENEMY_STARTING_POINTS[Math.floor(Math.random()*ENEMY_STARTING_POINTS.length)];
+            this.x = - Math.floor((Math.random() * 50) + 150);
         }
 
-    //TODO: Handle collision with player
+    if((this.x < player.x + 50) && (this.x > player.x - 50)
+        && ((this.y < (player.y + 50)) && (this.y > (player.y - 50)))) {
+        player.x = 202;
+        player.y = 404;
+    }
 };
 
 // Draw the enemy on the screen, required method for game
@@ -42,6 +51,7 @@ var Player = function(){
     this.x = 202;
     this.y = 404;
     this.currDirection;
+    this.score = 0;
     this.calculateOffset = function(x, y, direction){
         if(direction === 'right'){
             x += BOARD_UNIT_SIZE + 1;
@@ -87,8 +97,11 @@ Player.prototype.handleInput = function(allowedKeys){
 var player = new Player();
 var enemy1 = new Enemy();
 var enemy2 = new Enemy();
-var enemy3 = new Enemy();
-var allEnemies = [enemy1];
+
+var allEnemies = [];
+for(var i = 0; i < NUM_ENEMIES; i++){
+    allEnemies.push(new Enemy());
+}
 
 
 // This listens for key presses and sends the keys to your
