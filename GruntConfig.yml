@@ -1,0 +1,4 @@
+scssDir: src/scss/
+jsSrcDir: js/
+jsConcatDir: dist/js/
+cssDir: dist/css/
